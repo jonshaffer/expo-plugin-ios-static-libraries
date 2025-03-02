@@ -1,0 +1,49 @@
+{
+  "name": "expo-plugin-ios-static-libraries",
+  "version": "1.0.0",
+  "description": "Expo Config Plugin to set specific iOS libraries to use static build type",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build && husky",
+    "prepublishOnly": "npm run build",
+    "test": "jest",
+    "pack": "npm pack",
+    "commitlint": "commitlint --edit"
+  },
+  "keywords": [
+    "expo",
+    "react-native",
+    "ios",
+    "podfile",
+    "config-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jonshaffer/expo-plugin-ios-static-libraries"
+  },
+  "author": "Jon Shaffer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jonshaffer/expo-plugin-ios-static-libraries/issues"
+  },
+  "homepage": "https://github.com/jonshaffer/expo-plugin-ios-static-libraries#readme",
+  "dependencies": {
+    "@expo/config-plugins": "^7.0.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.10.5",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "memfs": "^4.17.0",
+    "ts-jest": "^29.2.6",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "expo": ">=47.0.0"
+  }
+}
