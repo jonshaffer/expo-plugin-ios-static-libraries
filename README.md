@@ -32,7 +32,7 @@ Add the plugin to your `app.json` or `app.config.js`:
 
 ## Example
 
-Here's an example of how to set React-Native-BLE-PLX, react-native-permissions, and op-sqlite to use static libraries:
+Here's an example of how to set React-Native-BLE-PLX, react-native-permissions, and @op-engineering/op-sqlite to use static libraries:
 
 ```json
 {
@@ -42,7 +42,7 @@ Here's an example of how to set React-Native-BLE-PLX, react-native-permissions, 
       [
         "expo-plugin-ios-static-libraries",
         {
-          "libraries": ["BleManager", "RNPermissions", ]
+          "libraries": ["BleManager", "RNPermissions", "op-sqlite"]
         }
       ]
     ]
