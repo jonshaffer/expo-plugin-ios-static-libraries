@@ -1,0 +1,14 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "expo-plugin-ios-static-library",
+      "dependencies": {
+        "@config-plugins/repo": "expo/config-plugins",
+      },
+    },
+  },
+  "packages": {
+    "@config-plugins/repo": ["@config-plugins/repo@github:expo/config-plugins#ec4f114", {}, "expo-config-plugins-ec4f114"],
+  }
+}
