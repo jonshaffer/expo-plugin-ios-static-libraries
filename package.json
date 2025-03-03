@@ -1,6 +1,6 @@
 {
   "name": "expo-plugin-ios-static-libraries",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Expo Config Plugin to set specific iOS libraries to use static build type",
   "main": "build/index.js",
   "types": "build/index.d.ts",
