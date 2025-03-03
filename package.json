@@ -6,12 +6,16 @@
   "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build && husky",
-    "prepublishOnly": "npm run build",
+    "prepare": "bun run build && bun .husky/install.mjs",
+    "prepublishOnly": "bun run build",
     "test": "jest",
-    "pack": "npm pack",
+    "pack": "bun pm pack",
     "commitlint": "commitlint --edit"
   },
+  "files": [
+    "build/*",
+    "**/*.d.ts"
+  ],
   "keywords": [
     "expo",
     "react-native",

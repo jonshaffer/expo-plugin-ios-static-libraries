@@ -8,6 +8,8 @@ An Expo Config Plugin that allows you to set specific iOS libraries to use stati
 npm install expo-plugin-ios-static-libraries
 # or
 yarn add expo-plugin-ios-static-libraries
+# or
+bun add expo-plugin-ios-static-libraries
 ```
 
 ## Usage
