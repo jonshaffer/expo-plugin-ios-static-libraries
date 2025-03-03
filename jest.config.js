@@ -9,7 +9,7 @@ module.exports = {
     '!**/node_modules/**',
     '!**/build/**'
   ],
-  coverageReporters: ['text', 'lcov', 'json', 'html'],
+  coverageReporters: ['text', 'lcov', 'json', 'html', 'json-summary'],
   coverageThreshold: {
     global: {
       branches: 75,

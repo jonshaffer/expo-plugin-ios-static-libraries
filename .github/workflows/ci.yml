@@ -32,7 +32,64 @@ jobs:
         run: bun run build
         
       - name: Run tests
-        run: bun run test
+        run: |
+          # Run tests and capture output
+          TEST_OUTPUT=$(bun run test)
+          TEST_EXIT_CODE=$?
+          
+          # Write test results to GitHub Step Summary
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$TEST_OUTPUT" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          
+          # Add coverage summary if available
+          if [ -f "coverage/coverage-summary.json" ]; then
+            echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+            
+            # Install jq if not available (should be pre-installed on GitHub Actions runners)
+            if ! command -v jq &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y jq
+            fi
+            
+            # Extract total coverage data and create a markdown table
+            echo "### Overall Coverage" >> $GITHUB_STEP_SUMMARY
+            echo "| Type | Covered | Total | Percentage |" >> $GITHUB_STEP_SUMMARY
+            echo "| ---- | ------- | ----- | ---------- |" >> $GITHUB_STEP_SUMMARY
+            
+            # Statements
+            STATEMENTS=$(jq -r '.total.statements.pct' coverage/coverage-summary.json)
+            STATEMENTS_COVERED=$(jq -r '.total.statements.covered' coverage/coverage-summary.json)
+            STATEMENTS_TOTAL=$(jq -r '.total.statements.total' coverage/coverage-summary.json)
+            echo "| Statements | $STATEMENTS_COVERED | $STATEMENTS_TOTAL | $STATEMENTS% |" >> $GITHUB_STEP_SUMMARY
+            
+            # Branches
+            BRANCHES=$(jq -r '.total.branches.pct' coverage/coverage-summary.json)
+            BRANCHES_COVERED=$(jq -r '.total.branches.covered' coverage/coverage-summary.json)
+            BRANCHES_TOTAL=$(jq -r '.total.branches.total' coverage/coverage-summary.json)
+            echo "| Branches | $BRANCHES_COVERED | $BRANCHES_TOTAL | $BRANCHES% |" >> $GITHUB_STEP_SUMMARY
+            
+            # Functions
+            FUNCTIONS=$(jq -r '.total.functions.pct' coverage/coverage-summary.json)
+            FUNCTIONS_COVERED=$(jq -r '.total.functions.covered' coverage/coverage-summary.json)
+            FUNCTIONS_TOTAL=$(jq -r '.total.functions.total' coverage/coverage-summary.json)
+            echo "| Functions | $FUNCTIONS_COVERED | $FUNCTIONS_TOTAL | $FUNCTIONS% |" >> $GITHUB_STEP_SUMMARY
+            
+            # Lines
+            LINES=$(jq -r '.total.lines.pct' coverage/coverage-summary.json)
+            LINES_COVERED=$(jq -r '.total.lines.covered' coverage/coverage-summary.json)
+            LINES_TOTAL=$(jq -r '.total.lines.total' coverage/coverage-summary.json)
+            echo "| Lines | $LINES_COVERED | $LINES_TOTAL | $LINES% |" >> $GITHUB_STEP_SUMMARY
+            
+            # Also include the raw JSON for reference
+            echo "### Raw Coverage Data" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Exit with the original test exit code
+          exit $TEST_EXIT_CODE
       
       - name: Upload test coverage
         uses: actions/upload-artifact@v4
