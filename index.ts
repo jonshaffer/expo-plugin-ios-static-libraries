@@ -1,6 +1,8 @@
-import { ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
+import { ConfigPlugin, PluginError, withDangerousMod } from '@expo/config-plugins';
 import * as fs from 'fs';
 import path from 'path';
+
+const pluginComment = "# Added by expo-plugin-ios-static-libraries";
 
 /**
  * Config plugin that adds pre_install hook to the iOS Podfile to set
@@ -18,6 +20,11 @@ const withIosStaticLibraries: ConfigPlugin<{ libraries: string[] }> = (
       
       if (fs.existsSync(podfilePath)) {
         let podfileContent = fs.readFileSync(podfilePath, 'utf-8');
+
+        // If there is already a match for this plugins comment, skip adding.
+        if (podfileContent.indexOf(pluginComment) != -1) {
+          return config;
+        }
         
         // Create condition for libraries
         const libraryConditions = libraries
@@ -34,7 +41,7 @@ const withIosStaticLibraries: ConfigPlugin<{ libraries: string[] }> = (
           const insertPoint = existingContent.lastIndexOf('end');
           
           const codeToAdd = `
-  # Added by expo-plugin-ios-static-libraries
+  ${pluginComment}
   installer.pod_targets.each do |pod|
     if ${libraryConditions}
       def pod.build_type
@@ -50,7 +57,7 @@ const withIosStaticLibraries: ConfigPlugin<{ libraries: string[] }> = (
         } else {
           // No existing pre_install block, create a new one
           const preInstallBlock = `
-# Added by expo-plugin-ios-static-libraries
+${pluginComment}
 pre_install do |installer|
   installer.pod_targets.each do |pod|
     if ${libraryConditions}
