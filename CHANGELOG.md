@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4](https://github.com/jonshaffer/expo-plugin-ios-static-libraries/compare/expo-plugin-ios-static-libraries-v1.0.3...expo-plugin-ios-static-libraries-v1.0.4) (2025-03-04)
+
+
+### Bug Fixes
+
+* updating config-plugin dep version ([7c88fef](https://github.com/jonshaffer/expo-plugin-ios-static-libraries/commit/7c88feffa2d1220e6df48a3075e618c5df650da4))
+
 ## [1.0.3](https://github.com/jonshaffer/expo-plugin-ios-static-libraries/compare/expo-plugin-ios-static-libraries-v1.0.2...expo-plugin-ios-static-libraries-v1.0.3) (2025-03-03)
 
 
