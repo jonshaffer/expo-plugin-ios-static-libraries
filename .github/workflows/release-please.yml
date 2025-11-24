@@ -15,7 +15,7 @@ jobs:
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: googleapis/release-please-action@v4
         id: release
         with:
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
