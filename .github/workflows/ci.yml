@@ -9,6 +9,13 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        expo-sdk: [52, 53, 54]
+
+    name: Test (Expo SDK ${{ matrix.expo-sdk }})
+
     steps:
       - uses: actions/checkout@v6
 
@@ -26,10 +33,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install SDK-specific @expo/config-plugins
+        env:
+          EXPO_SDK: ${{ matrix.expo-sdk }}
+        run: |
+          if [ "$EXPO_SDK" = "52" ]; then
+            pnpm add @expo/config-plugins@^9.0.0 --save-dev
+          elif [ "$EXPO_SDK" = "53" ]; then
+            pnpm add @expo/config-plugins@^10.0.0 --save-dev
+          elif [ "$EXPO_SDK" = "54" ]; then
+            pnpm add @expo/config-plugins@^10.0.0 --save-dev
+          fi
+
       - name: Pack for NPM registry
+        if: matrix.expo-sdk == 54
         run: pnpm pack
 
       - name: Publish dry-run
+        if: matrix.expo-sdk == 54
         run: pnpm publish --dry-run --no-git-checks
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -98,6 +119,7 @@ jobs:
           exit $TEST_EXIT_CODE
       
       - name: Upload test coverage
+        if: matrix.expo-sdk == 54
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
