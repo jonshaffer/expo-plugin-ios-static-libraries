@@ -9,22 +9,20 @@ const pluginComment = "# Added by expo-plugin-ios-static-libraries";
  * This function is exported for testing purposes
  */
 export function patchPodfile(podfileContent: string, libraries: string[] = []): string {
+  // Skip if no libraries to configure
+  if (libraries.length === 0) {
+    return podfileContent;
+  }
+
   // If there is already a match for this plugins comment, skip adding.
   if (podfileContent.indexOf(pluginComment) !== -1) {
     return podfileContent;
   }
-  
-  // Create condition for libraries
-  let libraryConditions = '';
-  if (libraries.length > 0) {
-    libraryConditions = libraries
-      .map(lib => `pod.name.eql?('${lib}')`)
-      .join(' || ');
-  } else {
-    // If no libraries specified, use a condition that's always false
-    // This ensures the code is syntactically valid but won't affect any libraries
-    libraryConditions = 'false';
-  }
+
+  // Create condition for libraries, escaping single quotes to prevent injection
+  const libraryConditions = libraries
+    .map(lib => `pod.name.eql?('${lib.replace(/'/g, "\\'")}')`)
+    .join(' || ');
   
   // Check if pre_install block already exists
   const preInstallRegex = /pre_install\s+do\s+\|installer\|([\s\S]*?)end/;
@@ -86,14 +84,17 @@ const withIosStaticLibraries: ConfigPlugin<{ libraries: string[] }> = (
       const { platformProjectRoot } = config.modRequest;
       const podfilePath = path.join(platformProjectRoot, 'Podfile');
       
-      if (fs.existsSync(podfilePath)) {
-        const podfileContent = fs.readFileSync(podfilePath, 'utf-8');
-        const newPodfileContent = patchPodfile(podfileContent, libraries);
-        
-        // Only write the file if changes were made
-        if (newPodfileContent !== podfileContent) {
-          fs.writeFileSync(podfilePath, newPodfileContent);
-        }
+      if (!fs.existsSync(podfilePath)) {
+        console.warn('[expo-plugin-ios-static-libraries] Podfile not found at', podfilePath);
+        return config;
+      }
+
+      const podfileContent = fs.readFileSync(podfilePath, 'utf-8');
+      const newPodfileContent = patchPodfile(podfileContent, libraries);
+
+      // Only write the file if changes were made
+      if (newPodfileContent !== podfileContent) {
+        fs.writeFileSync(podfilePath, newPodfileContent);
       }
 
       return config;

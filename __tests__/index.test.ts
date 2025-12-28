@@ -41,12 +41,18 @@ end
     expect(occurrences).toEqual(1);
   });
 
-  test('should handle empty libraries array', () => {
+  test('should return unchanged content for empty libraries array', () => {
     const patched = patchPodfile(samplePodfile, []);
-    // Should still add the marker and pre_install block
-    expect(patched).toMatch(/expo-plugin-ios-static-libraries/i);
-    // But the condition should be empty
-    expect(patched).not.toMatch(/pod\.name\.eql\?/);
+    // Should return the original content unchanged
+    expect(patched).toBe(samplePodfile);
+    // Should not add any plugin markers
+    expect(patched).not.toMatch(/expo-plugin-ios-static-libraries/i);
+  });
+
+  test('should escape single quotes in library names', () => {
+    const patched = patchPodfile(samplePodfile, ["Test'Lib"]);
+    // Should contain escaped quote
+    expect(patched).toMatch(/pod\.name\.eql\?\('Test\\'Lib'\)/);
   });
 
   test('should add to existing pre_install block', () => {
