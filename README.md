@@ -2,6 +2,15 @@
 
 An Expo Config Plugin that allows you to set specific iOS libraries to use static build type. This helps resolve issues with dynamic library dependencies in your iOS builds.
 
+## Compatibility
+
+| Expo SDK | Supported |
+|----------|-----------|
+| 54       | Yes       |
+| 53       | Yes       |
+| 52       | Yes       |
+| < 52     | No        |
+
 ## Installation
 
 ```bash
