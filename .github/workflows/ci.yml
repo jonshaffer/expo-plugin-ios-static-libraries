@@ -11,30 +11,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          bun-version-file: '.tool-versions'
-          
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.tool-versions'
+          cache: 'pnpm'
+
       - name: Install dependencies
-        run: bun install --frozen-lockfile
-        
+        run: pnpm install --frozen-lockfile
+
       - name: Pack for NPM registry
-        run: bun pm pack
+        run: pnpm pack
 
       - name: Publish dry-run
-        run: bun publish --dry-run
+        run: pnpm publish --dry-run --no-git-checks
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
-        
+
       - name: Build
-        run: bun run build
-        
+        run: pnpm run build
+
       - name: Run tests
         run: |
           # Run tests and capture output
-          TEST_OUTPUT=$(bun run test)
+          TEST_OUTPUT=$(pnpm run test)
           TEST_EXIT_CODE=$?
           
           # Write test results to GitHub Step Summary

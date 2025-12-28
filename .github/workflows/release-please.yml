@@ -27,12 +27,20 @@ jobs:
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          bun-version-file: '.tool-versions'
-      - run: bun install --frozen-lockfile
-      - run: bun run build
-      - run: bun publish
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.tool-versions'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: pnpm publish --no-git-checks
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}

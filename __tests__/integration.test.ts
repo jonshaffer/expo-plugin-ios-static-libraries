@@ -24,15 +24,21 @@ jest.mock('fs', () => {
 
 describe('Integration tests with realistic Podfiles', () => {
   let withIosStaticLibraries: any;
-  
+  let consoleWarnSpy: jest.SpyInstance;
+
   // Before each test, re-import the module to get a fresh instance with clean mocks
   beforeEach(() => {
     jest.clearAllMocks();
-    
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
     // We need to re-import the module to get the newly mocked version
     jest.isolateModules(() => {
       withIosStaticLibraries = require('../index').default;
     });
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
   });
 
   const runModFunction = async (config: any, libraries: string[], podfileContent: string) => {
@@ -196,5 +202,32 @@ end
     expect(writtenContent).toContain('AnotherExistingLib');
     expect(writtenContent).toContain('NewStaticLib');
     expect(writtenContent).toContain('OneMoreLib');
+  });
+
+  it('should warn and skip when Podfile does not exist', async () => {
+    const mockConfig = {
+      modRequest: {
+        platformProjectRoot: '/mock/path'
+      }
+    };
+
+    // Mock Podfile not existing
+    (fs.existsSync as jest.Mock).mockReturnValue(false);
+
+    // Call the plugin
+    const result = withIosStaticLibraries(mockConfig, { libraries: ['SomeLib'] });
+
+    // Get and run the mod function
+    const modFn = result._mock_mod_fn;
+    await modFn(mockConfig);
+
+    // Should have warned about missing Podfile
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[expo-plugin-ios-static-libraries] Podfile not found at',
+      expect.any(String)
+    );
+
+    // Should not have written anything
+    expect(fs.writeFileSync).not.toHaveBeenCalled();
   });
 });

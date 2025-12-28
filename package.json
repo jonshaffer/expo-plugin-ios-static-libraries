@@ -6,10 +6,10 @@
   "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "prepare": "bun run build && bun .husky/install.mjs",
-    "prepublishOnly": "bun run build",
+    "prepare": "pnpm run build && node .husky/install.mjs",
+    "prepublishOnly": "pnpm run build",
     "test": "jest",
-    "pack": "bun pm pack",
+    "pack": "pnpm pack",
     "commitlint": "commitlint --edit"
   },
   "files": [

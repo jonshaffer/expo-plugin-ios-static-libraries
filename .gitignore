@@ -37,7 +37,7 @@ lerna-debug.log*
 # TypeScript
 *.tsbuildinfo
 
-# Bun
+# Lock files are committed, but ignore binary variants
 bun.lockb
 
 # Expo
