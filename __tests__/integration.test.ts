@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import path from 'path';
+import type { LibraryEntry } from '../index';
 
 // Mock the entire @expo/config-plugins module
 jest.mock('@expo/config-plugins', () => {
@@ -41,7 +42,7 @@ describe('Integration tests with realistic Podfiles', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  const runModFunction = async (config: any, libraries: string[], podfileContent: string) => {
+  const runModFunction = async (config: any, libraries: LibraryEntry[], podfileContent: string) => {
     // Setup existsSync and readFileSync mocks
     (fs.existsSync as jest.Mock).mockReturnValue(true);
     (fs.readFileSync as jest.Mock).mockReturnValue(podfileContent);
@@ -229,5 +230,80 @@ end
 
     // Should not have written anything
     expect(fs.writeFileSync).not.toHaveBeenCalled();
+  });
+
+  it('should enable modular headers for Swift-based pods like Firebase', async () => {
+    const mockConfig = {
+      modRequest: {
+        platformProjectRoot: '/mock/path'
+      }
+    };
+
+    const podfile = `
+platform :ios, '13.0'
+
+target 'MyApp' do
+  use_react_native!(:path => config[:reactNativePath])
+end
+`;
+
+    // Mix of string and object library entries
+    const libraries: LibraryEntry[] = [
+      'BleManager',  // Simple string - no modular headers
+      { name: 'Firebase', modularHeaders: true },
+      { name: 'FirebaseAuth', modularHeaders: true },
+      { name: 'GTMSessionFetcher', modularHeaders: true },
+    ];
+
+    const { writtenContent } = await runModFunction(mockConfig, libraries, podfile);
+
+    // All libraries should have static library build type
+    expect(writtenContent).toContain("pod.name.eql?('BleManager')");
+    expect(writtenContent).toContain("pod.name.eql?('Firebase')");
+    expect(writtenContent).toContain("pod.name.eql?('FirebaseAuth')");
+    expect(writtenContent).toContain("pod.name.eql?('GTMSessionFetcher')");
+    expect(writtenContent).toContain('Pod::BuildType.static_library');
+
+    // Only the modularHeaders libraries should have modular headers enabled
+    expect(writtenContent).toContain('set_use_modular_headers_for_pod');
+    expect(writtenContent).toContain("'Firebase', 'FirebaseAuth', 'GTMSessionFetcher'");
+    expect(writtenContent).toContain('target_definitions');
+
+    // BleManager should NOT be in the modular headers list
+    expect(writtenContent).not.toMatch(/\['BleManager'.*\]\.each do \|lib_name\|/);
+
+    // Should only have one pre_install block
+    const preInstallMatches = (writtenContent.match(/pre_install do \|installer\|/g) || []).length;
+    expect(preInstallMatches).toBe(1);
+  });
+
+  it('should work with all string libraries (backward compatibility)', async () => {
+    const mockConfig = {
+      modRequest: {
+        platformProjectRoot: '/mock/path'
+      }
+    };
+
+    const podfile = `
+platform :ios, '13.0'
+
+target 'MyApp' do
+  use_react_native!(:path => config[:reactNativePath])
+end
+`;
+
+    // Original string-only format should still work
+    const libraries: LibraryEntry[] = ['LibA', 'LibB', 'LibC'];
+
+    const { writtenContent } = await runModFunction(mockConfig, libraries, podfile);
+
+    // All libraries should have static library build type
+    expect(writtenContent).toContain("pod.name.eql?('LibA')");
+    expect(writtenContent).toContain("pod.name.eql?('LibB')");
+    expect(writtenContent).toContain("pod.name.eql?('LibC')");
+    expect(writtenContent).toContain('Pod::BuildType.static_library');
+
+    // Should NOT have modular headers code
+    expect(writtenContent).not.toContain('set_use_modular_headers_for_pod');
   });
 });
