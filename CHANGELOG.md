@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/jonshaffer/expo-plugin-ios-static-libraries/compare/expo-plugin-ios-static-libraries-v1.0.4...expo-plugin-ios-static-libraries-v1.1.0) (2026-01-03)
+
+
+### Features
+
+* add modular headers support for Swift pods ([6ce68a9](https://github.com/jonshaffer/expo-plugin-ios-static-libraries/commit/6ce68a90600fe13497cdb85fd040ad6281590d71)), closes [#70](https://github.com/jonshaffer/expo-plugin-ios-static-libraries/issues/70)
+
+
+### Bug Fixes
+
+* add input sanitization and improve error handling ([f93337f](https://github.com/jonshaffer/expo-plugin-ios-static-libraries/commit/f93337fd940442921cd1ff8a463dea755329bb18))
+* update @expo/config-plugins for SDK 52-54 compatibility ([1b22bb6](https://github.com/jonshaffer/expo-plugin-ios-static-libraries/commit/1b22bb60fada76f75d21b737b4a641f15b0870bb))
+
 ## [1.0.4](https://github.com/jonshaffer/expo-plugin-ios-static-libraries/compare/expo-plugin-ios-static-libraries-v1.0.3...expo-plugin-ios-static-libraries-v1.0.4) (2025-03-04)
 
 
