@@ -48,3 +48,9 @@ web-build/
 # Temporary files
 *.tmp
 *~
+
+# Test projects (only scripts/ and test-projects/README.md are committed)
+test-projects/*/
+
+# Firebase MCP debug log
+firebase-debug.log
