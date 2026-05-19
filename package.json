@@ -37,7 +37,7 @@
     "@expo/config-plugins": ">=9.0.0 <56.0.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.2.0",
+    "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^20.2.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^25.0.3",
